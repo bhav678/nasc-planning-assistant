@@ -7,8 +7,23 @@ st.set_page_config(
     layout="wide"
 )
 
-# Remove any default messages and set custom title
+# Title
 st.title("NASC Sort Center Labor Planning Assistant")
+
+# Add Sample Questions Section
+st.markdown("### 🤔 Sample Questions You Can Ask:")
+with st.expander("Click to see example questions"):
+    st.markdown("""
+    **Volume Planning:**
+    - How many people do I need for 50,000 packages?
+    - What's the process for handling unexpected high volume?
+    - When should I consider flex up vs VET?
+    
+    **Flex Options:**
+    - How much notice do I need for flex up?
+    - What approvals do I need for flex down?
+    - Can I flex down on the same day?
+    """)
 
 # Create two columns for layout
 col1, col2 = st.columns([2,1])
@@ -17,28 +32,25 @@ with col1:
     # Main content area
     st.markdown("### Plan Your Labor Strategy")
     
-    # Scenario selection with more context
+    # Scenario selection
     scenario = st.selectbox(
         "What scenario are you planning for?",
-        ["Select Scenario", "High Volume", "Low Volume", "Flex Up", "Flex Down"],
-        help="Choose a scenario to get specific guidance"
+        ["Select Scenario", "High Volume", "Low Volume", "Flex Up", "Flex Down"]
     )
     
-    # Volume input (optional)
+    # Volume input
     volume = st.number_input("Expected Volume (packages):", 
                            min_value=0, 
                            value=50000, 
-                           step=1000,
-                           help="Enter expected package volume")
+                           step=1000)
     
-    # Additional context
+    # Question input
     specific_question = st.text_area(
         "Any specific questions or concerns?",
-        height=100,
-        help="Enter any specific questions about your scenario"
+        height=100
     )
     
-    # Get guidance button with styling
+    # Get guidance button
     if st.button("Get Planning Guidance", type="primary"):
         st.markdown("### Recommended Actions:")
         
@@ -52,18 +64,9 @@ with col1:
                - Alert site leadership for approvals
             
             2. **Staffing Considerations:**
-               - Calculate headcount needs for {volume:,} packages
-               - Assess current roster availability
+               - Calculate headcount for volume
+               - Assess roster availability
                - Consider labor share options
-            
-            3. **Required Approvals:**
-               - Site leadership sign-off for flex changes
-               - Document business justification
-            
-            4. **Communication Plan:**
-               - Notify affected associates
-               - Update shift planners
-               - Monitor SLA impact
             """)
             
         elif scenario == "Low Volume":
@@ -75,12 +78,7 @@ with col1:
                - Evaluate VTO opportunities
                - Review labor share possibilities
             
-            2. **Optimization Steps:**
-               - Calculate minimum headcount needed
-               - Identify potential VTO candidates
-               - Plan cross-training opportunities
-            
-            3. **Required Actions:**
+            2. **Required Actions:**
                - Get site leadership approval
                - Document volume justification
                - Monitor productivity metrics
@@ -88,48 +86,38 @@ with col1:
             
         elif scenario == "Flex Up":
             st.info("""
-            #### Flex Up Implementation:
+            #### Flex Up Guidelines:
             
-            1. **Guidelines:**
-               - Maximum shift duration: 5 hours
-               - Minimum notice: 24 hours preferred
-               - Required approval: Site leadership
+            1. **Key Rules:**
+               - Maximum 5-hour shifts
+               - 24-hour notice preferred
+               - Site leadership approval required
             
             2. **Process Steps:**
                - Document volume forecast
                - Calculate labor gap
                - Submit flex request
                - Communicate to associates
-            
-            3. **Best Practices:**
-               - Consider impact on next shift
-               - Monitor associate fatigue
-               - Track productivity metrics
             """)
             
         elif scenario == "Flex Down":
             st.info("""
-            #### Flex Down Implementation:
+            #### Flex Down Guidelines:
             
-            1. **Guidelines:**
-               - Minimum shift duration: 3 hours
+            1. **Key Rules:**
+               - Minimum 3-hour shifts
                - Notice: As early as possible
-               - Required approval: Site leadership
+               - Site leadership approval required
             
-            2. **Key Steps:**
+            2. **Important Steps:**
                - Verify volume reduction
                - Calculate optimal headcount
                - Get leadership approval
                - Communicate changes
-            
-            3. **Important Considerations:**
-               - Maintain SLA coverage
-               - Fair implementation across teams
-               - Document all decisions
             """)
             
         else:
-            st.warning("Please select a specific scenario to receive guidance.")
+            st.warning("Please select a scenario to receive guidance.")
 
 with col2:
     # Quick Reference Panel
@@ -149,7 +137,6 @@ with col2:
     - Flex changes: Site leadership
     - VET posting: 24-hour notice
     - VTO offering: Same-day OK
-    - Labor share: Both sites
     """)
     
     # Key Metrics
@@ -160,15 +147,7 @@ with col2:
     - SLA performance
     - TPH (Throughput per Hour)
     """)
-    
-    # Additional Resources
-    st.markdown("### Additional Resources")
-    st.markdown("""
-    - [NASC Labor Planning Guide](https://internal-link)
-    - [Flex Guidelines](https://internal-link)
-    - [VET/VTO Policies](https://internal-link)
-    """)
 
 # Footer
 st.markdown("---")
-st.caption("NASC Labor Planning Assistant v1.1 | Updated Oct 2025")
+st.caption("NASC Labor Planning Assistant v1.1")
