@@ -2,38 +2,42 @@ import streamlit as st
 import random
 
 # Page config
-st.set_page_config(
-    page_title="NASC Labor Planning Assistant",
-    page_icon="📊",
-    layout="wide"
-)
+st.set_page_config(page_title="NASC Labor Planning Assistant", page_icon="📊", layout="wide")
 
 # Title
 st.title("NASC Sort Center Labor Planning Assistant")
 
-# Create two columns for layout
+# Sample Questions Section
+with st.expander("🤔 Click to see example questions you can ask"):
+    st.markdown("""
+    **Volume Planning:**
+    - How many people do I need for 50,000 packages?
+    - What's the process for handling unexpected high volume?
+    - When should I consider flex up vs VET?
+    
+    **Flex Options:**
+    - How much notice do I need for flex up?
+    - What approvals do I need for flex down?
+    - Can I flex down on the same day?
+    
+    **Labor Management:**
+    - What's the process for posting VET?
+    - How do I handle low volume days?
+    - When should I consider labor share?
+    """)
+
+# Main layout
 col1, col2 = st.columns([2,1])
 
 with col1:
-    # Scenario selection
-    scenario = st.selectbox(
-        "What scenario are you planning for?",
-        ["Select Scenario", "High Volume", "Low Volume", "Flex Up", "Flex Down"]
-    )
+    scenario = st.selectbox("What scenario are you planning for?",
+                            ["Select Scenario", "High Volume", "Low Volume", "Flex Up", "Flex Down"])
     
-    # Volume input
-    volume = st.number_input("Expected Volume (packages):", 
-                           min_value=0, 
-                           value=50000, 
-                           step=1000)
+    volume = st.number_input("Expected Volume (packages):", min_value=0, value=50000, step=1000)
     
-    # Add specific question input
-    question = st.text_area(
-        "Describe your situation or ask a specific question:",
-        help="Provide details about your scenario or ask specific questions"
-    )
+    question = st.text_area("Describe your situation or ask a specific question:",
+                            help="Provide details about your scenario or ask specific questions")
 
-    # Add two columns for response type selection
     guide_col1, guide_col2 = st.columns(2)
     
     with guide_col1:
@@ -64,7 +68,6 @@ with col1:
         if st.button("Get AI Guidance"):
             st.markdown("### AI-Generated Guidance:")
             with st.spinner("AI is analyzing your scenario..."):
-                # Simulate AI response
                 ai_responses = [
                     f"For your {scenario.lower()} scenario with {volume} packages, consider the following:",
                     "1. Immediate Action: " + random.choice(["Flex Up staff", "Offer VET", "Implement Flex Down", "Assess labor share options"]),
@@ -76,10 +79,8 @@ with col1:
                 st.write("\n\n".join(ai_responses))
 
 with col2:
-    # Quick Reference Panel
     st.markdown("### Quick Reference")
     
-    # Standard Guidelines
     st.info("""
     #### Standard Shift Guidelines
     - Base Shift: 4 hours
@@ -87,10 +88,9 @@ with col2:
     - Flex Down Min: 3 hours
     """)
     
-    # New AI Features Section
     st.markdown("### 🤖 AI Features (Simulated)")
     st.success("""
-    This tool now offers:
+    This tool offers:
     - Standard guidance
     - Simulated AI-powered analysis
     - Dynamic recommendations
@@ -101,4 +101,4 @@ with col2:
 
 # Footer
 st.markdown("---")
-st.caption("NASC Labor Planning Assistant v2.0 (AI-Simulated)")
+st.caption("NASC Labor Planning Assistant v2.1 (AI-Simulated with Sample Questions)")
