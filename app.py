@@ -4,6 +4,90 @@ import random
 # Page config
 st.set_page_config(page_title="NASC Labor Planning Assistant", page_icon="📊", layout="wide")
 
+# Function to generate contextual AI response
+def generate_ai_response(scenario, volume, question):
+    # Base responses for different scenarios
+    scenario_responses = {
+        "High Volume": {
+            "actions": [
+                "Implement Flex Up to 5-hour shifts immediately",
+                "Post VET opportunities with 24-hour notice",
+                "Activate labor share from nearby sites",
+                "Split shifts to maximize coverage"
+            ],
+            "staffing": [
+                f"Based on {volume} packages, recommend increasing headcount by 20%",
+                "Utilize VET to cover additional labor hours",
+                "Consider split shifts to maximize coverage",
+                "Activate cross-trained associates from other areas"
+            ],
+            "considerations": [
+                "Monitor SLA impact closely",
+                "Track productivity metrics hourly",
+                "Ensure adequate supervision coverage",
+                "Balance labor hours across shifts"
+            ]
+        },
+        "Low Volume": {
+            "actions": [
+                "Implement Flex Down to 3-hour shifts",
+                "Prepare VTO offerings",
+                "Consolidate operations areas",
+                "Optimize staff allocation"
+            ],
+            "staffing": [
+                f"For {volume} packages, consider reducing headcount by 15%",
+                "Offer VTO strategically",
+                "Redistribute staff to other areas",
+                "Use time for cross-training"
+            ],
+            "considerations": [
+                "Maintain minimum staffing for SLAs",
+                "Balance VTO distribution fairly",
+                "Keep core operations running efficiently",
+                "Use downtime for training"
+            ]
+        }
+    }
+
+    # Generate response based on question content
+    response = [f"Analyzing your scenario: {scenario} with {volume} packages"]
+    
+    if "flex" in question.lower():
+        if "High Volume" in scenario:
+            response.append("Flex Analysis: Recommend immediate Flex Up to 5 hours with leadership approval")
+        else:
+            response.append("Flex Analysis: Consider Flex Down to 3 hours after leadership approval")
+    
+    if "vet" in question.lower() or "vto" in question.lower():
+        if "High Volume" in scenario:
+            response.append("Labor Planning: Post VET opportunities with 24-hour notice")
+        else:
+            response.append("Labor Planning: Consider strategic VTO offerings")
+    
+    if "headcount" in question.lower() or "staff" in question.lower():
+        response.append(f"Staffing Analysis: Based on {volume} packages:")
+        if "High Volume" in scenario:
+            response.append("- Need additional headcount through VET or labor share")
+        else:
+            response.append("- Current headcount can be optimized through Flex Down")
+
+    # Add scenario-specific responses
+    if scenario in scenario_responses:
+        response.append("\nRecommended Actions:")
+        response.append("- " + random.choice(scenario_responses[scenario]["actions"]))
+        response.append("- " + random.choice(scenario_responses[scenario]["staffing"]))
+        response.append("\nKey Considerations:")
+        response.append("- " + random.choice(scenario_responses[scenario]["considerations"]))
+    
+    response.append("\nNext Steps:")
+    response.append("1. Review this plan with site leadership")
+    response.append("2. Document business justification")
+    response.append("3. Implement approved changes")
+    response.append("4. Monitor metrics and adjust as needed")
+    
+    return "\n".join(response)
+
 # Title
 st.title("NASC Sort Center Labor Planning Assistant")
 
@@ -30,75 +114,57 @@ with st.expander("🤔 Click to see example questions you can ask"):
 col1, col2 = st.columns([2,1])
 
 with col1:
-    scenario = st.selectbox("What scenario are you planning for?",
-                            ["Select Scenario", "High Volume", "Low Volume", "Flex Up", "Flex Down"])
+    scenario = st.selectbox(
+        "What scenario are you planning for?",
+        ["Select Scenario", "High Volume", "Low Volume", "Flex Up", "Flex Down"]
+    )
     
-    volume = st.number_input("Expected Volume (packages):", min_value=0, value=50000, step=1000)
+    volume = st.number_input(
+        "Expected Volume (packages):", 
+        min_value=0, 
+        value=50000, 
+        step=1000
+    )
     
-    question = st.text_area("Describe your situation or ask a specific question:",
-                            help="Provide details about your scenario or ask specific questions")
+    question = st.text_area(
+        "What specific guidance do you need?",
+        placeholder="Example: How should I handle staffing for this volume?"
+    )
 
-    guide_col1, guide_col2 = st.columns(2)
-    
-    with guide_col1:
-        if st.button("Get Standard Guidance"):
-            st.markdown("### Standard Guidelines:")
-            if scenario == "High Volume":
-                st.info("""
-                #### High Volume Plan:
-                1. Consider Flex Up to 5-hour shifts
-                2. Prepare VET postings (24-hour notice required)
-                3. Alert site leadership for approvals
-                4. Calculate headcount for volume
-                5. Assess roster availability
-                """)
-            elif scenario == "Low Volume":
-                st.info("""
-                #### Low Volume Plan:
-                1. Consider Flex Down to 3-hour shifts
-                2. Evaluate VTO opportunities
-                3. Get site leadership approval
-                4. Document volume justification
-                5. Monitor productivity metrics
-                """)
-            else:
-                st.warning("Please select a specific scenario for guidance.")
-                
-    with guide_col2:
-        if st.button("Get AI Guidance"):
+    if st.button("Get AI Guidance", type="primary"):
+        if scenario != "Select Scenario":
             st.markdown("### AI-Generated Guidance:")
-            with st.spinner("AI is analyzing your scenario..."):
-                ai_responses = [
-                    f"For your {scenario.lower()} scenario with {volume} packages, consider the following:",
-                    "1. Immediate Action: " + random.choice(["Flex Up staff", "Offer VET", "Implement Flex Down", "Assess labor share options"]),
-                    "2. Staffing Recommendation: " + random.choice(["Increase headcount by 10%", "Reduce shifts to 3 hours", "Maintain current staffing", "Cross-train associates"]),
-                    "3. Required Approvals: Site leadership sign-off needed for " + random.choice(["flex changes", "VET postings", "VTO offerings", "labor share"]),
-                    "4. Key Consideration: " + random.choice(["Monitor SLA impact", "Balance associate satisfaction", "Optimize productivity", "Ensure fair VET/VTO distribution"]),
-                    f"5. Next Steps: Review this plan with your team and implement based on the {volume} package volume forecast."
-                ]
-                st.write("\n\n".join(ai_responses))
+            with st.spinner("Analyzing your scenario..."):
+                response = generate_ai_response(scenario, volume, question)
+                st.write(response)
+        else:
+            st.warning("Please select a scenario to get guidance.")
 
 with col2:
     st.markdown("### Quick Reference")
     
     st.info("""
-    #### Standard Shift Guidelines
+    #### Standard Guidelines
     - Base Shift: 4 hours
     - Flex Up Max: 5 hours
     - Flex Down Min: 3 hours
     """)
     
-    st.markdown("### 🤖 AI Features (Simulated)")
-    st.success("""
-    This tool offers:
-    - Standard guidance
-    - Simulated AI-powered analysis
-    - Dynamic recommendations
-    - Specific scenario handling
+    st.warning("""
+    #### Required Approvals
+    - Flex changes: Site leadership
+    - VET posting: 24-hour notice
+    - VTO offering: Same-day OK
+    """)
     
-    Try both options to compare!
+    st.success("""
+    #### Key Metrics
+    - Package volume vs plan
+    - Labor hours vs volume
+    - SLA performance
+    - TPH (Throughput per Hour)
     """)
 
 # Footer
 st.markdown("---")
-st.caption("NASC Labor Planning Assistant v2.1 (AI-Simulated with Sample Questions)")
+st.caption("NASC Labor Planning Assistant v2.2 (Enhanced AI Simulation)")
